@@ -29,7 +29,11 @@ public class SpringSecurityConfig {
                                         antMatcher(HttpMethod.GET, "/users")
                                 ).permitAll()
                                 .anyRequest().authenticated()
-                ).build();
+                )
+                .sessionManagement(
+                        session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+                )
+                .build();
     }
 
 }

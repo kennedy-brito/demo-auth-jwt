@@ -3,6 +3,8 @@ package com.kennedy.demo_auth_jwt.servicies;
 import com.kennedy.demo_auth_jwt.entities.User;
 import com.kennedy.demo_auth_jwt.repositories.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -35,4 +37,16 @@ public class UserService {
         return userRepository.findAll();
     }
 
+    @Transactional(readOnly = true)
+    public User findByUsername(String username) {
+
+        return userRepository.findByUsername(username).orElseThrow(
+                () -> new UsernameNotFoundException("user not found")
+        );
+    }
+
+    @Transactional(readOnly = true)
+    public User.Role getRoleByUsername(String username) {
+        return userRepository.findRoleByUsername(username);
+    }
 }

@@ -13,4 +13,6 @@ The project should have the following security measures:
 - [ ] Authenticate using JWT
 - [ ] The resource to create a user should be public
 - [ ] The resource to show the data of a users should be accessible only to the user and the admin
+  - [ ] The admin can access the data from all users
+  - [ ] The user can access only his own data
 - [ ] The resource to list all user should be accessible only to the admin

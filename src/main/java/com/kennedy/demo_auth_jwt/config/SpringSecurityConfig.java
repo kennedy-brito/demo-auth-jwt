@@ -15,5 +15,13 @@ import static org.springframework.security.web.util.matcher.AntPathRequestMatche
 @Configuration
 public class SpringSecurityConfig {
 
+    @Bean
+    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+        return http
+                .csrf( crfs -> crfs.disable())
+                .formLogin( form -> form.disable())
+                .httpBasic( basic -> basic.disable())
+                .build();
+    }
 
 }

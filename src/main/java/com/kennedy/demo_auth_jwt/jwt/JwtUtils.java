@@ -1,5 +1,6 @@
 package com.kennedy.demo_auth_jwt.jwt;
 
+import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
@@ -54,6 +55,17 @@ public class JwtUtils {
         return false;
     }
 
+    private static Claims getClaimsFromToken(String token){
+        try{
+            return Jwts.parser()
+                    .verifyWith(generateKey()).build()
+                    .parseSignedClaims(refactorToken(token))
+                    .getPayload();
+        }catch (JwtException e){
+            log.error(String.format("Invalid Token %s", e.getMessage()));
+        }
+        return null;
+    }
     private static SecretKey generateKey(){
         return Keys.hmacShaKeyFor(SECRET_KEY.getBytes(StandardCharsets.UTF_8));
     }

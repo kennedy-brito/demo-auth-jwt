@@ -163,3 +163,91 @@ In part 2 we will learn how to intercept requests to verify if the user has a va
    ````
    
 Test the endpoint and see that it returns a token!
+
+# Filtering request to see if the user is authenticated
+Now that the user can authenticate and receive a valid toke, we should filter the request and verify if he is authenticated and if the token is valid.
+
+1. First we should create a filter class, our filter will be used once per request, so we extend the ``OncePerRequest`` abstract class
+   - We will need to use our ``JwtUserDetailsService`` here
+   ````java
+   public class JwtAuthorizationFilter extends OncePerRequestFilter {
+      @Autowired
+      private JwtUserDetailsService detailsService;
+   }
+   ````
+2. This class has to Override the method ``doFilterInternal``
+   - This filter does a lot of things
+   - It gets the Authorization field in the request header
+     - Because our token should be passed in this field in the format 'Bearer <token>'
+   - Verifies with the token is null, in a correct format and if it is not valid
+     - If this is true we continue our filter chain to verify if the url is restricted or not, to do that we call the ``doFilter`` in the filterChain object
+   - If the token is valid we have to save our user in our security context
+   - To do that we get the username from the payload and use the ``toAuthentication`` to save the user in the security context
+   - finally we continue the filter of the request
+   ````java
+   @Override
+       protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
+           String token = request.getHeader(JwtUtils.JWT_AUTHORIZATION);
+   
+           if(token == null || !token.startsWith(JwtUtils.JWT_BEARER)){
+               log.info("JWT Token is null, empty or don't start with 'Bearer '.");
+               filterChain.doFilter(request, response);
+               return;
+           }
+   
+           if(!JwtUtils.isTokenValid(token)){
+               log.warn("JWT Token is invalid or expired.");
+               filterChain.doFilter(request, response);
+               return;
+           }
+   
+           String username = JwtUtils.getUsernameFromToken(token);
+   
+           toAuthentication(request, username);
+   
+           filterChain.doFilter(request, response);
+       }
+   ````
+3. Now we should implement the ``toAuthentication`` method:
+   - what this method do is:
+     - find the user by the username using our detailsService
+       - Remember that UserDetails returned from the method is the JwtUserDetails extension that we implemented
+     - create an authenticated token with the userDetails object and it's authorities
+     - set some details for the token, in this case, we're saving some data from the request
+     - finally we save our authentication token in the security context, this will be useful for when we need to see permissions and user data
+   ````java
+    private void toAuthentication(HttpServletRequest request, String username) {
+        UserDetails userDetails = detailsService.loadUserByUsername(username);
+
+        UsernamePasswordAuthenticationToken authenticationToken
+                = UsernamePasswordAuthenticationToken.authenticated(userDetails, null, userDetails.getAuthorities());
+
+        authenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+
+        SecurityContextHolder.getContext().setAuthentication(authenticationToken);
+    }
+   ````
+   
+4. Now we should configure the application to use this filter, so going back to the class ``SpringSecurityConfig`` we set it as a filter that is executed after `UsernamePasswordAuthenticationFilter` class
+   ````java
+   @Bean
+   public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+       ...
+       .sessionManagement(
+               session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+      )
+      .addFilterAfter(
+              jwtAuthorizationFilter(), UsernamePasswordAuthenticationFilter.class
+      )
+      ...
+   }
+   ````
+
+5. The final change we should the is remove the permission to access the url's ``/users/{id}`` and the get url `/users`
+   - we do this deleting the lines from our ``filterChain`` method, now only authenticated users can access these url's
+   ````java
+   antMatcher(HttpMethod.POST, "/users"),
+   antMatcher(HttpMethod.GET, "/users/{id}"),
+   ````
+
+Now we conclude this tutorial! The next step is control the methods access by user role!

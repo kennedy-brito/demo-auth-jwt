@@ -1,5 +1,6 @@
 package com.kennedy.demo_auth_jwt.jwt;
 
+import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 
 import javax.crypto.SecretKey;
@@ -30,5 +31,24 @@ public class JwtUtils {
                 .plusMinutes(EXPIRE_MINUTES);
 
         return Date.from(end.atZone(ZoneId.systemDefault()).toInstant());
+    }
+
+    public static JwtToken createToken(String username, String role){
+        Date issuedAt = new Date();
+
+        Date limit = toExpireDate(issuedAt);
+
+        String token = Jwts.builder()
+                .header().add("typ", "jwt") //Defining header using header builder
+                .and() //returning to Jwts builder
+                .subject(username) // who owns the token
+                .issuedAt(issuedAt)
+                .expiration(limit)
+                .signWith(generateKey()) //The key used to sign, the encrypt algorithm is decided automatically by the lib
+                .claims().add("role", role) //additional information in the payload
+                .and()
+                .compact(); //generate the token
+
+        return new JwtToken(token);
     }
 }

@@ -1,6 +1,7 @@
 # What is the purpose of this project?
 This project is a way to practice using JWT auth with Spring security. It too should serves as a base tutorial to this process. 
 
+The ``Tutorial.md`` has a tutorial of how each objective was achieved f.
 # How it achieves that?
 The branch ``initial_setup`` has the API without auth or security measures.
 From this branch, the ``securing`` branch implements security measures.

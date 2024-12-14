@@ -26,7 +26,8 @@ public class SpringSecurityConfig {
                                 .requestMatchers(
                                         antMatcher(HttpMethod.POST, "/users"),
                                         antMatcher(HttpMethod.GET, "/users/{id}"),
-                                        antMatcher(HttpMethod.GET, "/users")
+                                        antMatcher(HttpMethod.GET, "/users"),
+                                        antMatcher(HttpMethod.POST, "/auth")
                                 ).permitAll()
                                 .anyRequest().authenticated()
                 )

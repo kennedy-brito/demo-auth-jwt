@@ -21,7 +21,15 @@ public class SpringSecurityConfig {
                 .csrf( crfs -> crfs.disable())
                 .formLogin( form -> form.disable())
                 .httpBasic( basic -> basic.disable())
-                .build();
+                .authorizeHttpRequests(
+                        auth -> auth
+                                .requestMatchers(
+                                        antMatcher(HttpMethod.POST, "/users"),
+                                        antMatcher(HttpMethod.GET, "/users/{id}"),
+                                        antMatcher(HttpMethod.GET, "/users")
+                                ).permitAll()
+                                .anyRequest().authenticated()
+                ).build();
     }
 
 }

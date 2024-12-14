@@ -26,6 +26,7 @@ public class UserResource {
         );
     }
 
+    @PreAuthorize("hasRole('ADMIN') OR (hasRole('CLIENT') AND #id == authentication.principal.id)")
     @GetMapping(value = "/{id}")
     public ResponseEntity<User> findById(@PathVariable Long id){
         return ResponseEntity.ok(

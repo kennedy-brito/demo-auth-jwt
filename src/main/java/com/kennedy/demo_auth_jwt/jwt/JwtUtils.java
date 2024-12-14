@@ -55,6 +55,10 @@ public class JwtUtils {
         return false;
     }
 
+    public String getUsernameFromToken(String token){
+        return getClaimsFromToken(token).getSubject();
+    }
+
     private static Claims getClaimsFromToken(String token){
         try{
             return Jwts.parser()

@@ -25,7 +25,7 @@ public class User implements Serializable {
 
     @Enumerated(EnumType.STRING)
     @Column(name = "role", nullable = false)
-    private Role role = Role.ROLE_ADMIN;
+    private Role role = Role.ROLE_CLIENT;
 
     public enum Role{
 

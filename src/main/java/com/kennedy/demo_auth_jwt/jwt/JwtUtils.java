@@ -4,6 +4,9 @@ import io.jsonwebtoken.security.Keys;
 
 import javax.crypto.SecretKey;
 import java.nio.charset.StandardCharsets;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.util.Date;
 
 public class JwtUtils {
 
@@ -16,5 +19,16 @@ public class JwtUtils {
 
     public static SecretKey generateKey(){
         return Keys.hmacShaKeyFor(SECRET_KEY.getBytes(StandardCharsets.UTF_8));
+    }
+
+    private static Date toExpireDate(Date start){
+        LocalDateTime dateTime = start.toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime();
+
+        LocalDateTime end = dateTime
+                .plusDays(EXPIRE_DAYS)
+                .plusHours(EXPIRE_HOURS)
+                .plusMinutes(EXPIRE_MINUTES);
+
+        return Date.from(end.atZone(ZoneId.systemDefault()).toInstant());
     }
 }

@@ -18,20 +18,6 @@ public class JwtUtils {
     public static final Long EXPIRE_HOURS = 0L;
     public static final Long EXPIRE_MINUTES = 2L;
 
-    public static SecretKey generateKey(){
-        return Keys.hmacShaKeyFor(SECRET_KEY.getBytes(StandardCharsets.UTF_8));
-    }
-
-    private static Date toExpireDate(Date start){
-        LocalDateTime dateTime = start.toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime();
-
-        LocalDateTime end = dateTime
-                .plusDays(EXPIRE_DAYS)
-                .plusHours(EXPIRE_HOURS)
-                .plusMinutes(EXPIRE_MINUTES);
-
-        return Date.from(end.atZone(ZoneId.systemDefault()).toInstant());
-    }
 
     public static JwtToken createToken(String username, String role){
         Date issuedAt = new Date();
@@ -50,5 +36,28 @@ public class JwtUtils {
                 .compact(); //generate the token
 
         return new JwtToken(token);
+    }
+
+
+    private static SecretKey generateKey(){
+        return Keys.hmacShaKeyFor(SECRET_KEY.getBytes(StandardCharsets.UTF_8));
+    }
+
+    private static Date toExpireDate(Date start){
+        LocalDateTime dateTime = start.toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime();
+
+        LocalDateTime end = dateTime
+                .plusDays(EXPIRE_DAYS)
+                .plusHours(EXPIRE_HOURS)
+                .plusMinutes(EXPIRE_MINUTES);
+
+        return Date.from(end.atZone(ZoneId.systemDefault()).toInstant());
+    }
+    private static String refactorToken(String token){
+        if( token.contains(JWT_BEARER)){
+            return token.substring(JWT_BEARER.length());
+        }
+
+        return token;
     }
 }

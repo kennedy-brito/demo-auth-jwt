@@ -13,7 +13,6 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-import static org.springframework.security.web.util.matcher.AntPathRequestMatcher.antMatcher;
 
 @EnableMethodSecurity
 @Configuration
@@ -28,8 +27,7 @@ public class SpringSecurityConfig {
                 .authorizeHttpRequests(
                         auth -> auth
                                 .requestMatchers(
-                                        antMatcher(HttpMethod.POST, "/users"),
-                                        antMatcher(HttpMethod.POST, "/auth")
+                                        HttpMethod.POST, "/users", "/auth"
                                 ).permitAll()
                                 .anyRequest().authenticated()
                 )

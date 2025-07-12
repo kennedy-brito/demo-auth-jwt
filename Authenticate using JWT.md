@@ -148,8 +148,7 @@ In part 2 we will learn how to intercept requests to verify if the user has a va
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
    ...
            .requestMatchers(
-           ...
-           antMatcher(HttpMethod.POST, "/auth")
+            HttpMethod.POST, "/auth"
            )
                    ...
    }

@@ -30,10 +30,12 @@ First we should configure the security of the application, to do that we should:
                    .authorizeHttpRequests(
                            auth -> auth
                                    .requestMatchers(
-                                           antMatcher(HttpMethod.POST, "/users"),
-                                           antMatcher(HttpMethod.GET, "/users/{id}"),
-                                           antMatcher(HttpMethod.GET, "/users")
+                                           HttpMethod.POST, "/users"
                                    ).permitAll()
+                                    .requestMatchers(
+                                        HttpMethod.GET, 
+                                            "/users/{id}" , "/users")        
+                                    ).permitAll()
                                    .anyRequest().authenticated()
                    ).sessionManagement(
                            session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
